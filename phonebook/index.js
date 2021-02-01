@@ -4,7 +4,7 @@ const morgan = require('morgan')
 
 app.use(express.json())
 
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'))
 
 let persons = [
     {
@@ -28,6 +28,10 @@ let persons = [
         "number": "39-23-6423122"
     }
 ]
+
+morgan.token('postData', function getPostData(req, res) {
+    return '';
+})
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -63,6 +67,34 @@ app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
     response.status(204).end()
+})
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if (!body.content) {
+        return response.status(400).json({
+            error: 'content missing'
+        })
+    }
+
+    let lastPersonId = persons.reduce((value, carry) => {
+        return value.id > carry.id ? value : carry
+    }).id;
+
+    morgan.token('postData', function getPostData(req, res) {
+        return JSON.stringify(req.body.content);
+    })
+
+    const newPerson = {
+        "id": lastPersonId + 1,
+        "name": body.content.name,
+        "number": body.content.number
+    };
+
+    persons = persons.concat(newPerson)
+
+    response.json(newPerson)
 })
 
 const PORT = 3001
