@@ -1,8 +1,11 @@
+const cors = require('cors')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
 
 app.use(express.json())
+
+app.use(cors())
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'))
 
@@ -72,7 +75,7 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if (!body.content) {
+    if (!body) {
         return response.status(400).json({
             error: 'content missing'
         })
@@ -83,13 +86,13 @@ app.post('/api/persons', (request, response) => {
     }).id;
 
     morgan.token('postData', function getPostData(req, res) {
-        return JSON.stringify(req.body.content);
+        return JSON.stringify(req.body);
     })
 
     const newPerson = {
         "id": lastPersonId + 1,
-        "name": body.content.name,
-        "number": body.content.number
+        "name": body.name,
+        "number": body.number
     };
 
     persons = persons.concat(newPerson)
