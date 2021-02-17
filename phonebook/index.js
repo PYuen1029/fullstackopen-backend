@@ -42,7 +42,7 @@ app.get('/', (request, response) => {
 
 app.get('/info', (request, response) => {
     const count = persons.length;
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
     const date = new Date().toString();
 
     response.send(`
@@ -100,8 +100,11 @@ app.post('/api/persons', (request, response) => {
     response.json(newPerson)
 })
 
-const PORT = 3001
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+let port = process.env.PORT;
+if (port == null || port == '') {
+    port = 3001;
+}
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`)
 })
 
