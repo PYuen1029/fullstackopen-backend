@@ -1,7 +1,13 @@
+require('dotenv').config()
 const cors = require('cors')
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const Person = require('./models/person')
+
+/**
+ * MIDDLEWARE
+ */
 
 app.use(express.json())
 
@@ -36,20 +42,25 @@ morgan.token('postData', function getPostData(req, res) {
     return '';
 })
 
+/**
+ * Routes
+ */
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/info', (request, response) => {
-    const count = persons.length;
-    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
-    const date = new Date().toString();
+    Person.count({}).then(result => {
+        const date = new Date().toString();
 
-    response.send(`
-<p>Phonebook has info for ${count} people</p>
+        response.send(`
+<p>Phonebook has info for ${result} people</p>
 <p>${date}</p>
 `
-    )
+        )
+
+    });
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -63,7 +74,9 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+        response.json(result)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -99,6 +112,10 @@ app.post('/api/persons', (request, response) => {
 
     response.json(newPerson)
 })
+
+/**
+ * Config
+ */
 
 let port = process.env.PORT;
 if (port == null || port == '') {
