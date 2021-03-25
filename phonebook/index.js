@@ -94,23 +94,15 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    let lastPersonId = persons.reduce((value, carry) => {
-        return value.id > carry.id ? value : carry
-    }).id;
-
-    morgan.token('postData', function getPostData(req, res) {
-        return JSON.stringify(req.body);
+    const person = new Person({
+        name: body.name,
+        phoneno: body.number,
     })
 
-    const newPerson = {
-        "id": lastPersonId + 1,
-        "name": body.name,
-        "number": body.number
-    };
-
-    persons = persons.concat(newPerson)
-
-    response.json(newPerson)
+    person.save().then(result => {
+        console.log(result)
+        response.json(person)
+    })
 })
 
 /**
