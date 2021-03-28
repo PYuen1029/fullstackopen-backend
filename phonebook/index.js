@@ -63,14 +63,13 @@ app.get('/info', (request, response) => {
     });
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+app.get('/api/persons/:id', (request, response, next) => {
+    const id = request.params.id
+    Person.findById(id)
+        .then(person => {
+            response.json(person)
+        })
+        .catch(error => next(error))
 })
 
 app.get('/api/persons', (request, response) => {
