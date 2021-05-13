@@ -4,8 +4,6 @@ const config = require("../utils/config");
 
 const url = config.MONGODB_URI;
 
-logger.info('connecting to', url)
-
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
     .then(result => {
         logger.info('connected to MongoDB')
