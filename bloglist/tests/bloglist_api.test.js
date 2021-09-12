@@ -13,6 +13,15 @@ test.only('correct amount of blogs are returned as json', async () => {
     expect(response.body).toHaveLength(7);
 })
 
+test.only('blog identifier is called id', async () => {
+    const response = await api
+        .get('/api/blogs')
+    ;
+
+    let firstBlogId = response.body[0].id;
+    expect(firstBlogId).toBeDefined();
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
