@@ -22,6 +22,28 @@ test.only('blog identifier is called id', async () => {
     expect(firstBlogId).toBeDefined();
 })
 
+test.only('create blog api request works', async () => {
+    const newPost = {
+        "title": "Test Blog " + Date.now(),
+        "author": "Test Author",
+        "url": "www.example.com",
+        "likes": 5
+    }
+
+    let preBlogPostCount = await api
+        .get('/api/blogs');
+    preBlogPostCount = preBlogPostCount.body.length;
+
+    await api
+        .post('/api/blogs')
+        .send(newPost);
+
+    let postBlogPostCount = await api
+        .get('/api/blogs');
+
+    expect(postBlogPostCount.body).toHaveLength(preBlogPostCount + 1);
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
